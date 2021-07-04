@@ -40,8 +40,8 @@ func getTargetDir(c *cli.Context) (string, error) {
 
 	targetDir := curDir
 
-	if c.Args().Len() > 1 {
-		folderName := c.Args().Get(1)
+	if c.Args().Len() > 0 {
+		folderName := c.Args().Get(0)
 
 		targetDir = filepath.Join(targetDir, folderName)
 	}
@@ -90,6 +90,14 @@ func initializeGitDirs(c *cli.Context) error {
 		return err
 	}
 
+	if c.Args().Len() > 0 {
+		err = os.Mkdir(targetDir, 0755)
+	}
+
+	if err != nil {
+		return err
+	}
+
 	for _, dir := range getDirsToMake() {
 		dirToMake := filepath.Join(targetDir, dir)
 
@@ -111,9 +119,13 @@ var InitCommand = &cli.Command{
 	Usage:    "Initialize a git repository",
 
 	Before: func(c *cli.Context) error {
+		utils.InfoLogger.Println("Validating preconditions for init command.")
+
 		err := validateInitCommand(c)
 
 		if err != nil {
+			utils.ErrorLogger.Printf("Error when validating preconditions: %s\n", err.Error())
+
 			utils.PrintError(err.Error(), c.Command.Name)
 			cli.Exit(err.Error(), 1)
 		}
@@ -122,15 +134,21 @@ var InitCommand = &cli.Command{
 	},
 
 	Action: func(c *cli.Context) error {
+		utils.InfoLogger.Println("Creating directories.")
+
 		err := initializeGitDirs(c)
 
 		if err != nil {
+			utils.ErrorLogger.Printf("Error when creating directories: %s\n", err.Error())
 			return err
 		}
+
+		utils.InfoLogger.Println("Creating HEAD marker.")
 
 		err = initializeGitHead(c)
 
 		if err != nil {
+			utils.ErrorLogger.Printf("Error when creating HEAD marker: %s\n", err.Error())
 			return err
 		}
 
