@@ -4,6 +4,8 @@ import (
 	"os"
 
 	"github.com/urfave/cli/v2"
+
+	commands "github.com/shikharbhardwaj/codecrafters-git-go/app/commands"
 )
 
 const (
@@ -17,7 +19,7 @@ func main() {
 	}
 
 	app.Commands = []*cli.Command{
-		initCommand,
+		commands.InitCommand,
 	}
 
 	app.Run(os.Args)

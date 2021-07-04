@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"fmt"
@@ -7,6 +7,9 @@ import (
 	"path/filepath"
 
 	"github.com/urfave/cli/v2"
+
+	errors "github.com/shikharbhardwaj/codecrafters-git-go/app/errors"
+	utils "github.com/shikharbhardwaj/codecrafters-git-go/app/utils"
 )
 
 func getDirsToMake() []string {
@@ -16,8 +19,8 @@ func getDirsToMake() []string {
 func checkEmptyRepoTarget(targetPath string) error {
 	for _, dir := range getDirsToMake() {
 		path := filepath.Join(targetPath, dir)
-		if pathExists(path) {
-			return &PathError{
+		if utils.PathExists(path) {
+			return &errors.PathError{
 				Op:   "AlreadyExists",
 				Path: path,
 				Err:  nil,
@@ -70,7 +73,7 @@ func initializeGitHead(c *cli.Context) error {
 	headFilePath := filepath.Join(targetDir, ".git/HEAD")
 
 	if err := ioutil.WriteFile(headFilePath, headFileContents, 0644); err != nil {
-		return &PathError{
+		return &errors.PathError{
 			Op:   "Write",
 			Path: headFilePath,
 			Err:  err,
@@ -91,7 +94,7 @@ func initializeGitDirs(c *cli.Context) error {
 		dirToMake := filepath.Join(targetDir, dir)
 
 		if err := os.Mkdir(dirToMake, 0755); err != nil {
-			return &PathError{
+			return &errors.PathError{
 				Op:   "Mkdir",
 				Path: dirToMake,
 				Err:  err,
@@ -102,7 +105,7 @@ func initializeGitDirs(c *cli.Context) error {
 	return nil
 }
 
-var initCommand = &cli.Command{
+var InitCommand = &cli.Command{
 	Name:     "init",
 	HelpName: "init",
 	Usage:    "Initialize a git repository",
@@ -111,7 +114,8 @@ var initCommand = &cli.Command{
 		err := validateInitCommand(c)
 
 		if err != nil {
-			printError(err.Error(), c.Command.Name)
+			utils.PrintError(err.Error(), c.Command.Name)
+			cli.Exit(err.Error(), 1)
 		}
 
 		return err
