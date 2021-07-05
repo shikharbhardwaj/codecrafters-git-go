@@ -14,5 +14,5 @@ func PathExists(path string) bool {
 		return os.IsExist(err)
 	}
 
-	return false
+	return true
 }

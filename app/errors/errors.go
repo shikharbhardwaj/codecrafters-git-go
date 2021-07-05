@@ -13,3 +13,11 @@ func (e *PathError) Error() string {
 		return e.Op + " " + e.Path
 	}
 }
+
+type GitError struct {
+	Message string
+}
+
+func (e GitError) Error() string {
+	return e.Message
+}
