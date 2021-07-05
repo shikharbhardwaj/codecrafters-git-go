@@ -8,9 +8,8 @@
 set -e
 tmpFile=$(mktemp)
 
-go env
+cwd=$PWD
 
-cd app && go get && cd ..
+cd $(dirname $0)/app && go build -o "$tmpFile" && cd $cwd
 
-go build -o "$tmpFile" $(dirname "$0")/app/*.go
 exec "$tmpFile" "$@"
