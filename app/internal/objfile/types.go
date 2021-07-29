@@ -1,6 +1,10 @@
 package objfile
 
-import errors "github.com/shikharbhardwaj/codecrafters-git-go/app/errors"
+import (
+	"fmt"
+
+	errors "github.com/shikharbhardwaj/codecrafters-git-go/app/errors"
+)
 
 type GitObjectType int
 
@@ -20,5 +24,5 @@ func DetectObjectType(type_string string) (GitObjectType, error) {
 		return Tree, nil
 	}
 
-	return 0, errors.GitError{Message: "Unkown object type."}
+	return 0, errors.GitError{Message: fmt.Sprintf("Unkown object type: '%s'", type_string)}
 }

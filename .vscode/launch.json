@@ -13,7 +13,8 @@
 			"args": [
 				"cat-file",
 				"-p",
-				"fda3154e461fa1aba77aed519bb903ae1bb470ac"
+				// "fda3154e461fa1aba77aed519bb903ae1bb470ac",
+				"4c587ce39bfa1f9cf80c177cddc2438ff9634ef8"
 			],
 			"cwd": "/home/shikhar/dev/codecrafters-git-go/.local/debug"
 		}

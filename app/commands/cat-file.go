@@ -1,12 +1,14 @@
 package commands
 
 import (
+	"io"
 	"os"
 
 	"github.com/urfave/cli/v2"
 
 	errors "github.com/shikharbhardwaj/codecrafters-git-go/app/errors"
 	fs "github.com/shikharbhardwaj/codecrafters-git-go/app/internal/fs"
+	"github.com/shikharbhardwaj/codecrafters-git-go/app/internal/objfile"
 	"github.com/shikharbhardwaj/codecrafters-git-go/app/utils"
 )
 
@@ -71,7 +73,7 @@ var CatFileCommand = &cli.Command{
 			return err
 		}
 
-		err = git.WritePrettyObject(blobSha, os.Stdout)
+		reader, err := git.GetObjectReader(blobSha)
 
 		if err != nil {
 			utils.ErrorLogger.Println(err.Error())
@@ -80,6 +82,32 @@ var CatFileCommand = &cli.Command{
 
 			return err
 		}
+
+		objreader, err := objfile.NewReader(reader)
+
+		if err != nil {
+			utils.ErrorLogger.Println(err.Error())
+
+			cli.Exit(err.Error(), 1)
+
+			return err
+		}
+
+		objtype, _, err := objreader.Header()
+
+		if objtype != objfile.Blob {
+			err = errors.GitError{Message: "Cannot cat-file a non blob"}
+		}
+
+		if err != nil {
+			utils.ErrorLogger.Println(err.Error())
+
+			cli.Exit(err.Error(), 1)
+
+			return err
+		}
+
+		io.Copy(os.Stdout, objreader)
 
 		return nil
 	},

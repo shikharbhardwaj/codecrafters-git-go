@@ -41,9 +41,7 @@ func (r *Reader) prepareForRead(t GitObjectType, size int64) {
 }
 
 func (r *Reader) Header() (t GitObjectType, size int64, err error) {
-	bufReader := bufio.NewReader(r)
-
-	bytes, err := bufReader.ReadBytes(' ')
+	bytes, err := r.readUntil(' ')
 
 	if err != nil {
 		return
@@ -55,7 +53,7 @@ func (r *Reader) Header() (t GitObjectType, size int64, err error) {
 		return
 	}
 
-	bytes, err = bufReader.ReadBytes(0)
+	bytes, err = r.readUntil(0x0)
 
 	if err != nil {
 		return
@@ -73,14 +71,30 @@ func (r *Reader) Header() (t GitObjectType, size int64, err error) {
 	return
 }
 
+func (r *Reader) readUntil(delim byte) ([]byte, error) {
+	var buf [1]byte
+	value := make([]byte, 0, 16)
+	for {
+		if n, err := r.zlib.Read(buf[:]); err != nil && (err != io.EOF || n == 0) {
+			if err == io.EOF {
+				err = errors.GitError{Message: "Could not detect object header."}
+				return nil, err
+			}
+			return nil, err
+		}
+
+		if buf[0] == delim {
+			return value, nil
+		}
+
+		value = append(value, buf[0])
+	}
+}
+
 func getObjectHeader(r io.Reader) ([]byte, error) {
 	bufReader := bufio.NewReader(r)
 
 	bytes, err := bufReader.ReadBytes(0x0)
-
-	if err != nil {
-		return "", err
-	}
 
 	return bytes, err
 }
@@ -105,6 +119,10 @@ func GetObjectType(objectReader io.Reader) (GitObjectType, error) {
 	}
 
 	type_string, err := getTypeStringFromHeader(header)
+
+	if err != nil {
+		return 0, err
+	}
 
 	return DetectObjectType(type_string)
 }

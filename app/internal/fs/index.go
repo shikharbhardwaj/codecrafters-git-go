@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	errors "github.com/shikharbhardwaj/codecrafters-git-go/app/errors"
-	objfile "github.com/shikharbhardwaj/codecrafters-git-go/app/internal/objfile"
 	utils "github.com/shikharbhardwaj/codecrafters-git-go/app/utils"
 )
 
@@ -64,11 +63,5 @@ func (g Git) GetObjectReader(objectSha string) (io.Reader, error) {
 		return nil, err
 	}
 
-	reader, err := objfile.NewReader(fileReader)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return reader, nil
+	return fileReader, nil
 }
