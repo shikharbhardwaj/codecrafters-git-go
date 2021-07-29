@@ -1,14 +1,13 @@
 package commands
 
 import (
-	"bufio"
-	"compress/zlib"
-	"io"
 	"os"
 
-	errors "github.com/shikharbhardwaj/codecrafters-git-go/app/errors"
-	"github.com/shikharbhardwaj/codecrafters-git-go/app/utils"
 	"github.com/urfave/cli/v2"
+
+	errors "github.com/shikharbhardwaj/codecrafters-git-go/app/errors"
+	fs "github.com/shikharbhardwaj/codecrafters-git-go/app/internal/fs"
+	"github.com/shikharbhardwaj/codecrafters-git-go/app/utils"
 )
 
 var CatFileCommand = &cli.Command{
@@ -62,7 +61,7 @@ var CatFileCommand = &cli.Command{
 			cli.Exit(err.Error(), 1)
 		}
 
-		git, err := utils.FindGit(workingDir)
+		git, err := fs.FindGit(workingDir)
 
 		if err != nil {
 			utils.ErrorLogger.Println(err.Error())
@@ -72,7 +71,7 @@ var CatFileCommand = &cli.Command{
 			return err
 		}
 
-		blobPath, err := git.GetObjectPath(blobSha)
+		err = git.WritePrettyObject(blobSha, os.Stdout)
 
 		if err != nil {
 			utils.ErrorLogger.Println(err.Error())
@@ -81,31 +80,6 @@ var CatFileCommand = &cli.Command{
 
 			return err
 		}
-
-		f, err := os.Open(blobPath)
-
-		if err != nil {
-			utils.ErrorLogger.Println(err.Error())
-
-			cli.Exit(err.Error(), 1)
-
-			return err
-		}
-
-		defer f.Close()
-
-		fileReader := bufio.NewReader(f)
-		r, err := zlib.NewReader(fileReader)
-
-		if err != nil {
-			utils.ErrorLogger.Println(err.Error())
-
-			cli.Exit(err.Error(), 1)
-
-			return err
-		}
-
-		io.Copy(os.Stdout, r)
 
 		return nil
 	},

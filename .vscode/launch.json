@@ -11,7 +11,9 @@
 			"mode": "auto",
 			"program": "${fileDirname}",
 			"args": [
-				"init"
+				"cat-file",
+				"-p",
+				"fda3154e461fa1aba77aed519bb903ae1bb470ac"
 			],
 			"cwd": "/home/shikhar/dev/codecrafters-git-go/.local/debug"
 		}
