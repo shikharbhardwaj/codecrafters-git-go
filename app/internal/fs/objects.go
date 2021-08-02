@@ -7,9 +7,13 @@ import (
 	utils "github.com/shikharbhardwaj/codecrafters-git-go/app/utils"
 )
 
+func (g Git) ComputeObjectPath(objectSha string) string {
+	return filepath.Join(g.basedir, objectPath, objectSha[:2], objectSha[2:])
+}
+
 // Get the path of an object stored in Git, also checking if it exists.
 func (g Git) GetObjectPath(objectSha string) (string, error) {
-	objectPath := filepath.Join(g.basedir, "objects", objectSha[:2], objectSha[2:])
+	objectPath := g.ComputeObjectPath(objectSha)
 
 	if !utils.PathExists(objectPath) {
 		return "", &errors.PathError{

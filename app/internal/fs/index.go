@@ -3,6 +3,7 @@ package fs
 import (
 	"bufio"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -11,7 +12,9 @@ import (
 )
 
 const (
-	GIT_FOLDER_NAME = ".git"
+	suffix     = ".git"
+	objectPath = "objects"
+	packPath   = "pack"
 )
 
 type Git struct {
@@ -24,15 +27,15 @@ type Git struct {
 func FindGit(curDir string) (*Git, error) {
 	for marker := curDir; marker != "/"; {
 		utils.InfoLogger.Printf("Checking directory: %s\n", marker)
-		if filepath.Base(marker) == GIT_FOLDER_NAME {
+		if filepath.Base(marker) == suffix {
 			return &Git{
 				basedir: marker,
 			}, nil
 		}
 
-		if utils.PathExists(filepath.Join(marker, GIT_FOLDER_NAME)) {
+		if utils.PathExists(filepath.Join(marker, suffix)) {
 			return &Git{
-				basedir: filepath.Join(marker, GIT_FOLDER_NAME),
+				basedir: filepath.Join(marker, suffix),
 			}, nil
 		}
 
@@ -64,4 +67,10 @@ func (g Git) GetObjectReader(objectSha string) (io.Reader, error) {
 	}
 
 	return fileReader, nil
+}
+
+func (g Git) GetTempObjectFile() (*os.File, error) {
+	f, err := ioutil.TempFile(filepath.Join(g.basedir, objectPath, packPath), "tmp_obj_")
+
+	return f, err
 }

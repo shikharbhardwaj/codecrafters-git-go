@@ -21,6 +21,7 @@ func main() {
 	app.Commands = []*cli.Command{
 		commands.InitCommand,
 		commands.CatFileCommand,
+		commands.HashObjectCommand,
 	}
 
 	app.Run(os.Args)

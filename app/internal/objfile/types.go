@@ -14,15 +14,46 @@ const (
 	Commit
 )
 
-func DetectObjectType(type_string string) (GitObjectType, error) {
-	switch type_string {
-	case "blob":
-		return Blob, nil
-	case "commit":
-		return Commit, nil
-	case "tree":
-		return Tree, nil
+func ObjectTypeToNameMapping() map[GitObjectType]string {
+	return map[GitObjectType]string{
+		Blob:   "blob",
+		Tree:   "tree",
+		Commit: "commit",
+	}
+}
+
+func ObjectNameToTypeMapping() map[string]GitObjectType {
+	typeToName := ObjectTypeToNameMapping()
+
+	nameToType := make(map[string]GitObjectType, len(typeToName))
+
+	for k, v := range typeToName {
+		nameToType[v] = k
 	}
 
-	return 0, errors.GitError{Message: fmt.Sprintf("Unkown object type: '%s'", type_string)}
+	return nameToType
+}
+
+func DetectObjectType(typeString string) (GitObjectType, error) {
+	objType, prs := ObjectNameToTypeMapping()[typeString]
+
+	if prs {
+		return objType, nil
+	} else {
+		return 0, errors.GitError{Message: fmt.Sprintf("Unkown object type: '%s'", typeString)}
+	}
+}
+
+func (t GitObjectType) Valid() bool {
+	_, prs := ObjectTypeToNameMapping()[t]
+
+	return prs
+}
+
+func (t GitObjectType) String() string {
+	return ObjectTypeToNameMapping()[t]
+}
+
+func (t GitObjectType) Bytes() []byte {
+	return []byte(t.String())
 }

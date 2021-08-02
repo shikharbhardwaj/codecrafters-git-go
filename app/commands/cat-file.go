@@ -27,7 +27,7 @@ var CatFileCommand = &cli.Command{
 	},
 
 	Before: func(c *cli.Context) error {
-		utils.InfoLogger.Println("Validating preconditions for init command.")
+		utils.InfoLogger.Println("Validating preconditions for cat-file command.")
 
 		if c.Args().Len() < 1 {
 			utils.ErrorLogger.Println("Need blob SHA to do a cat-file.")
