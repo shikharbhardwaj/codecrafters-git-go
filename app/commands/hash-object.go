@@ -83,6 +83,11 @@ var HashObjectCommand = &cli.Command{
 
 		if c.Bool("w") {
 			tempFile, err = git.GetTempObjectFile()
+
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
+
 			tempLocation = tempFile.Name()
 
 			rawWriter = tempFile

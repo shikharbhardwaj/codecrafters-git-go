@@ -13,7 +13,7 @@ import (
 )
 
 func getDirsToMake() []string {
-	return []string{".git", ".git/objects", ".git/refs"}
+	return []string{".git", ".git/objects", ".git/refs", ".git/objects/pack"}
 }
 
 func checkEmptyRepoTarget(targetPath string) error {
