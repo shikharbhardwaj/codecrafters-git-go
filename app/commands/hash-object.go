@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 
 	"github.com/urfave/cli/v2"
@@ -76,7 +77,7 @@ var HashObjectCommand = &cli.Command{
 
 		defer f.Close()
 
-		rawWriter := io.Discard
+		rawWriter := ioutil.Discard
 		tempLocation := ""
 		var tempFile *os.File
 
