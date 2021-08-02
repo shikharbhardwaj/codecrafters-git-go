@@ -5,6 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 
@@ -55,9 +56,8 @@ var HashObjectCommand = &cli.Command{
 		// Check if the file arg is supplied.
 		if c.Args().Len() < 1 {
 			err = errors.GitError{Message: "Need file-path to hash object"}
-			cli.Exit(err.Error(), 1)
 
-			return err
+			return cli.Exit(err.Error(), 1)
 		}
 
 		path := c.Args().First()
@@ -93,14 +93,14 @@ var HashObjectCommand = &cli.Command{
 			rawWriter = tempFile
 
 			if err != nil {
-				return err
+				return cli.Exit(err.Error(), 1)
 			}
 		}
 
 		objWriter, err := objfile.NewWriter(rawWriter)
 
 		if err != nil {
-			return err
+			return cli.Exit(err.Error(), 1)
 		}
 
 		defer objWriter.Close()
@@ -108,7 +108,7 @@ var HashObjectCommand = &cli.Command{
 		fi, err := f.Stat()
 
 		if err != nil {
-			return err
+			return cli.Exit(err.Error(), 1)
 		}
 
 		objWriter.WriteHeader(objfile.Blob, fi.Size())
@@ -123,16 +123,29 @@ var HashObjectCommand = &cli.Command{
 			err = objWriter.Close()
 
 			if err != nil {
-				return err
+				return cli.Exit(err.Error(), 1)
 			}
 
 			err = tempFile.Close()
 
 			if err != nil {
-				return err
+				return cli.Exit(err.Error(), 1)
 			}
 
-			os.Rename(tempLocation, git.ComputeObjectPath(hash))
+			objectPath := git.ComputeObjectPath(hash)
+			objectDir := filepath.Dir(objectPath)
+
+			err := os.MkdirAll(objectDir, os.ModePerm)
+
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
+
+			err = os.Rename(tempLocation, objectPath)
+
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 		}
 
 		return nil
