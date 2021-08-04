@@ -35,13 +35,7 @@ var HashObjectCommand = &cli.Command{
 	Action: func(c *cli.Context) error {
 		utils.InfoLogger.Println("Validating preconditions for init command.")
 
-		workingDir, err := os.Getwd()
-
-		if err != nil {
-			utils.ErrorLogger.Println(err.Error())
-
-			cli.Exit(err.Error(), 1)
-		}
+		workingDir := c.String("C")
 
 		git, err := fs.FindGit(workingDir)
 

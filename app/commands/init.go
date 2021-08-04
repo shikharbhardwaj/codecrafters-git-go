@@ -13,7 +13,7 @@ import (
 )
 
 func getDirsToMake() []string {
-	return []string{".git", ".git/objects", ".git/refs", ".git/objects/pack"}
+	return []string{".git", ".git/objects", ".git/refs", ".git/objects/pack", ".git/refs/heads", ".git/refs/tags"}
 }
 
 func checkEmptyRepoTarget(targetPath string) error {
@@ -41,9 +41,11 @@ func getTargetDir(c *cli.Context) (string, error) {
 	targetDir := curDir
 
 	if c.Args().Len() > 0 {
-		folderName := c.Args().Get(0)
+		targetDir, err = filepath.Abs(c.Args().Get(0))
 
-		targetDir = filepath.Join(targetDir, folderName)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	return targetDir, nil
@@ -152,7 +154,7 @@ var InitCommand = &cli.Command{
 			return err
 		}
 
-		fmt.Println("Initialized git directory")
+		fmt.Fprintln(c.App.Writer, "Initialized git directory")
 
 		return nil
 	},

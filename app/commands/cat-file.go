@@ -2,7 +2,6 @@ package commands
 
 import (
 	"io"
-	"os"
 
 	"github.com/urfave/cli/v2"
 
@@ -55,13 +54,7 @@ var CatFileCommand = &cli.Command{
 
 		utils.InfoLogger.Printf("cat-file for blob SHA: %s\n", blobSha)
 
-		workingDir, err := os.Getwd()
-
-		if err != nil {
-			utils.ErrorLogger.Println(err.Error())
-
-			cli.Exit(err.Error(), 1)
-		}
+		workingDir := c.String("C")
 
 		git, err := fs.FindGit(workingDir)
 
@@ -107,7 +100,7 @@ var CatFileCommand = &cli.Command{
 			return err
 		}
 
-		io.Copy(os.Stdout, objreader)
+		io.Copy(c.App.Writer, objreader)
 
 		return nil
 	},
