@@ -39,6 +39,7 @@ func main() {
 		commands.InitCommand,
 		commands.CatFileCommand,
 		commands.HashObjectCommand,
+		commands.LsTreeCommand,
 	}
 
 	app.Run(os.Args)

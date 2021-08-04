@@ -71,9 +71,7 @@ var CatFileCommand = &cli.Command{
 		if err != nil {
 			utils.ErrorLogger.Println(err.Error())
 
-			cli.Exit(err.Error(), 1)
-
-			return err
+			return cli.Exit(err.Error(), 1)
 		}
 
 		objreader, err := objfile.NewReader(reader)
@@ -81,9 +79,7 @@ var CatFileCommand = &cli.Command{
 		if err != nil {
 			utils.ErrorLogger.Println(err.Error())
 
-			cli.Exit(err.Error(), 1)
-
-			return err
+			return cli.Exit(err.Error(), 1)
 		}
 
 		objtype, _, err := objreader.Header()
@@ -95,9 +91,7 @@ var CatFileCommand = &cli.Command{
 		if err != nil {
 			utils.ErrorLogger.Println(err.Error())
 
-			cli.Exit(err.Error(), 1)
-
-			return err
+			return cli.Exit(err.Error(), 1)
 		}
 
 		io.Copy(c.App.Writer, objreader)

@@ -19,12 +19,6 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 	return r.multi.Read(p)
 }
 
-func (r *Reader) ReadUntil(delim byte) ([]byte, error) {
-	bufReader := bufio.NewReader(r)
-
-	return bufReader.ReadBytes(delim)
-}
-
 func NewReader(r io.Reader) (*Reader, error) {
 	zlib, err := zlib.NewReader(r)
 	if err != nil {
