@@ -11,12 +11,11 @@
 			"mode": "auto",
 			"program": "${fileDirname}",
 			"args": [
-				"cat-file",
-				"-p",
-				// "fda3154e461fa1aba77aed519bb903ae1bb470ac",
-				"4c587ce39bfa1f9cf80c177cddc2438ff9634ef8"
+				 "ls-tree",
+				//  "--name-only",
+				 "17c1d614f1b8b6d4b071e13a28a6bf5c8d39f595"
 			],
-			"cwd": "/home/shikhar/dev/codecrafters-git-go/.local/debug"
+			"cwd": "/home/shikhar/dev/codecrafters-git-go"
 		}
 	]
 }

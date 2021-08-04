@@ -20,6 +20,7 @@ var LsTreeCommand = &cli.Command{
 	Flags: []cli.Flag{
 		&cli.BoolFlag{
 			Name:  "name-only",
+			Value: false,
 			Usage: "List only filenames (instead of the \"long\" output), one per line.",
 		},
 	},
@@ -80,7 +81,7 @@ var LsTreeCommand = &cli.Command{
 				return cli.Exit(err.Error(), 1)
 			}
 
-			fmt.Fprintf(c.App.Writer, "Entry with name: %s", entry.Name)
+			fmt.Fprintln(c.App.Writer, entry.String(c.Bool("name-only")))
 		}
 	},
 }
