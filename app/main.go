@@ -40,6 +40,7 @@ func main() {
 		commands.CatFileCommand,
 		commands.HashObjectCommand,
 		commands.LsTreeCommand,
+        commands.WriteTreeCommand,
 	}
 
 	app.Run(os.Args)

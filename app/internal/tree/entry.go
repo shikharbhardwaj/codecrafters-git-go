@@ -128,3 +128,4 @@ func (e *Entry) String(nameOnly bool) string {
 
 	return buf.String()
 }
+

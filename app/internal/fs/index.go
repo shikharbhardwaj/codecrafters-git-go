@@ -3,11 +3,14 @@ package fs
 import (
 	"bufio"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	errors "github.com/shikharbhardwaj/codecrafters-git-go/app/errors"
+	"github.com/shikharbhardwaj/codecrafters-git-go/app/internal/objfile"
+	"github.com/shikharbhardwaj/codecrafters-git-go/app/internal/tree"
 	utils "github.com/shikharbhardwaj/codecrafters-git-go/app/utils"
 )
 
@@ -74,3 +77,58 @@ func (g Git) GetTempObjectFile() (*os.File, error) {
 
 	return f, err
 }
+
+func (g Git) GetTreeEntries() ([]tree.Entry, error) {
+    entries := []tree.Entry{}
+
+    utils.InfoLogger.Printf("Base dir: %s\n", g.basedir)
+
+    err := filepath.Walk(filepath.Dir(g.basedir),
+    func(path string, info fs.FileInfo, err error) error {
+        utils.InfoLogger.Printf("Visit path: %s\n", path)
+        if err != nil {
+            return err
+        }
+
+        // Skip the .git directory
+        if info.IsDir() && info.Name() == suffix {
+            return filepath.SkipDir
+        }
+
+        if !info.IsDir() {
+            rawWriter := ioutil.Discard
+            objWriter, err := objfile.NewWriter(rawWriter)
+
+            if err != nil {
+                return err
+            }
+            defer objWriter.Close()
+
+            err = objWriter.WriteHeader(objfile.Blob, info.Size())
+            if err != nil {
+                return err
+            }
+
+            f, err := os.Open(path)
+            if err != nil {
+                return err
+            }
+            defer f.Close()
+
+            io.Copy(objWriter, f)
+
+            entry := tree.Entry{
+                Mode: uint32(info.Mode().Perm()),
+                Name: path,
+                Sha: []byte(objWriter.Hash().String()),
+            }
+
+            entries = append(entries, entry)
+        }
+
+        return nil
+    })
+
+    return entries, err
+}
+
